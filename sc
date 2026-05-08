@@ -158,14 +158,50 @@ let
         else if Value.Is(v, type record) and Record.HasFields(v, "Value") then Text.From(v[Value])
         else ToText(v),
 
+    GetRecordFieldIgnoreCase = (r as record, fieldNames as list) as any =>
+        let
+            names = Record.FieldNames(r),
+            pairs = List.Transform(names, each {Text.Lower(_), _}),
+            pick =
+                List.First(
+                    List.RemoveNulls(
+                        List.Transform(
+                            fieldNames,
+                            (f) =>
+                                let found = List.Select(pairs, each _{0} = Text.Lower(f))
+                                in if List.Count(found) > 0 then found{0}{1} else null
+                        )
+                    ),
+                    null
+                )
+        in
+            if pick = null then null else Record.FieldOrDefault(r, pick, null),
+
     ToUserTitleText = (v as any) as nullable text =>
         if v = null then
             null
+        else if Value.Is(v, type table) then
+            let
+                rows = Table.ToRecords(v),
+                titles =
+                    List.RemoveNulls(
+                        List.Transform(
+                            rows,
+                            each @ToUserTitleText(_)
+                        )
+                    )
+            in
+                if List.Count(titles) = 0 then null else Text.Combine(titles, "; ")
         else if Value.Is(v, type record) then
-            if Record.HasFields(v, "Title") then Text.From(v[Title])
-            else if Record.HasFields(v, "DisplayName") then Text.From(v[DisplayName])
-            else if Record.HasFields(v, "Email") then Text.From(v[Email])
-            else ToText(v)
+            let
+                candidate =
+                    GetRecordFieldIgnoreCase(
+                        v,
+                        {"Title", "DisplayName", "Name", "Value", "LookupValue", "Email"}
+                    ),
+                asText = if candidate = null then null else try Text.Trim(Text.From(candidate)) otherwise null
+            in
+                if asText <> null and asText <> "" then asText else ToText(v)
         else if Value.Is(v, type list) then
             Text.Combine(
                 List.RemoveNulls(

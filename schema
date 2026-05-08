@@ -123,6 +123,26 @@ let
     ToText = (v as any) as nullable text =>
         if v = null then
             null
+        else if Value.Is(v, type table) then
+            let
+                cols = Table.ColumnNames(v),
+                preferredCol =
+                    if List.Contains(cols, "Title") then "Title"
+                    else if List.Contains(cols, "Value") then "Value"
+                    else if List.Contains(cols, "DisplayName") then "DisplayName"
+                    else if List.Contains(cols, "Email") then "Email"
+                    else if List.Count(cols) > 0 then List.First(cols)
+                    else null,
+                values =
+                    if preferredCol = null then {}
+                    else List.RemoveNulls(Table.Column(v, preferredCol)),
+                rendered =
+                    if List.Count(values) > 0 then
+                        Text.Combine(List.Transform(values, each @ToText(_)), "; ")
+                    else
+                        Text.FromBinary(Json.FromValue(v), TextEncoding.Utf8)
+            in
+                rendered
         else if Value.Is(v, type record) then
             if Record.HasFields(v, "Email") then Text.From(v[Email])
             else if Record.HasFields(v, "DisplayName") then Text.From(v[DisplayName])

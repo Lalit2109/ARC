@@ -1,0 +1,269 @@
+let
+    // Parameters: set these in Power Query or replace with literals.
+    SiteUrl = pSiteUrl,
+    ListName = pListName,
+
+    Source = SharePoint.Tables(SiteUrl, [Implementation = "2.0", ViewMode = "All"]),
+    Items = Source{[Title = ListName]}[Items],
+
+    FieldMap = {
+        [Source = "ContentTypeId", Target = "ContentTypeId", SpType = "Text", DvType = "Text"],
+        [Source = "Server Name", Target = "Server Name", SpType = "Text", DvType = "Text"],
+        [Source = "Title", Target = "Title", SpType = "Text", DvType = "Text"],
+        [Source = "ID", Target = "ID", SpType = "Integer", DvType = "WholeNumber"],
+        [Source = "_ModerationComments", Target = "_ModerationComments", SpType = "Note", DvType = "MultilineText"],
+        [Source = "LinkTitle", Target = "LinkTitle", SpType = "Computed", DvType = "Text"],
+        [Source = "File_x0020_Type", Target = "File_x0020_Type", SpType = "Text", DvType = "Text"],
+        [Source = "_ColorHex", Target = "_ColorHex", SpType = "Text", DvType = "Text"],
+        [Source = "_ColorTag", Target = "_ColorTag", SpType = "Text", DvType = "Text"],
+        [Source = "_Emoji", Target = "_Emoji", SpType = "Text", DvType = "Text"],
+        [Source = "ComplianceAssetId", Target = "ComplianceAssetId", SpType = "Text", DvType = "Text"],
+        [Source = "Status", Target = "Status", SpType = "Choice", DvType = "Choice"],
+        [Source = "Manufacturer", Target = "Manufacturer", SpType = "Choice", DvType = "Choice"],
+        [Source = "Model", Target = "Model", SpType = "Choice", DvType = "Choice"],
+        [Source = "Color", Target = "Color", SpType = "Choice", DvType = "Choice"],
+        [Source = "SerialNumber", Target = "SerialNumber", SpType = "Choice", DvType = "Choice"],
+        [Source = "OrderNumber", Target = "OrderNumber", SpType = "Choice", DvType = "Choice"],
+        [Source = "BackupMethod", Target = "BackupMethod", SpType = "Choice", DvType = "Choice"],
+        [Source = "PatchingMethod", Target = "PatchingMethod", SpType = "Choice", DvType = "Choice"],
+        [Source = "OperatingSystem", Target = "OperatingSystem", SpType = "Choice", DvType = "Choice"],
+        [Source = "PurchaseDate", Target = "PurchaseDate", SpType = "Text", DvType = "Text"],
+        [Source = "DueDate", Target = "DueDate", SpType = "Text", DvType = "Text"],
+        [Source = "R_x002d_MonthofDecom", Target = "R_x002d_MonthofDecom", SpType = "Text", DvType = "Text"],
+        [Source = "R_x002d_Node4Cease", Target = "R_x002d_Node4Cease", SpType = "Text", DvType = "Text"],
+        [Source = "R_x002d_PotentialCostSaving", Target = "R_x002d_PotentialCostSaving", SpType = "Text", DvType = "Text"],
+        [Source = "R_x002d_ActualCostSaving", Target = "R_x002d_ActualCostSaving", SpType = "Text", DvType = "Text"],
+        [Source = "IPAddress", Target = "IPAddress", SpType = "Note", DvType = "MultilineText"],
+        [Source = "PatchingNotes", Target = "PatchingNotes", SpType = "Note", DvType = "MultilineText"],
+        [Source = "DataType", Target = "DataType", SpType = "Choice", DvType = "Choice"],
+        [Source = "BuiltBy", Target = "BuiltBy", SpType = "Text", DvType = "Text"],
+        [Source = "ServerContact", Target = "ServerContact", SpType = "Text", DvType = "Text"],
+        [Source = "R_x002d_DecomBy", Target = "R_x002d_DecomBy", SpType = "Text", DvType = "Text"],
+        [Source = "LeanIXApplication", Target = "LeanIXApplication", SpType = "LookupMulti", DvType = "Text"],
+        [Source = "LeanIX_x0020_Application_x003a__ExternalID", Target = "LeanIX_x0020_Application_x003a__ExternalID", SpType = "LookupMulti", DvType = "Text"],
+        [Source = "CurrentOwner", Target = "CurrentOwner", SpType = "User", DvType = "Text"],
+        [Source = "DecomOwner", Target = "DecomOwner", SpType = "User", DvType = "Text"],
+        [Source = "_ApprovalAssignedTo", Target = "_ApprovalAssignedTo", SpType = "UserMulti", DvType = "Text"],
+        [Source = "_ApprovalRespondedBy", Target = "_ApprovalRespondedBy", SpType = "UserMulti", DvType = "Text"],
+        [Source = "_ApprovalSentBy", Target = "_ApprovalSentBy", SpType = "User", DvType = "Text"],
+        [Source = "_ApprovalStatus", Target = "_ApprovalStatus", SpType = "Integer", DvType = "WholeNumber"],
+        [Source = "R_x002d_IOSheet", Target = "R_x002d_IOSheet", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_ADGroups", Target = "R_x002d_ADGroups", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_AntiVirus", Target = "R_x002d_AntiVirus", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_PatchManager", Target = "R_x002d_PatchManager", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_DNS", Target = "R_x002d_DNS", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_ADObject", Target = "R_x002d_ADObject", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_VCenterDisk", Target = "R_x002d_VCenterDisk", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_IPSheet", Target = "R_x002d_IPSheet", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_ArchiveSnow", Target = "R_x002d_ArchiveSnow", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_OpenManage", Target = "R_x002d_OpenManage", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_DeleteVMRep", Target = "R_x002d_DeleteVMRep", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_DatabaseBackup", Target = "R_x002d_DatabaseBackup", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_Backups", Target = "R_x002d_Backups", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_FirewallRules", Target = "R_x002d_FirewallRules", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "R_x002d_DateofDecom", Target = "R_x002d_DateofDecom", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "DecomByDate", Target = "DecomByDate", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "ARCAgentStatus", Target = "ARCAgentStatus", SpType = "Text", DvType = "Text"],
+        [Source = "ARCAgentVersion", Target = "ARCAgentVersion", SpType = "Text", DvType = "Text"],
+        [Source = "ARCExtensionsEnabled", Target = "ARCExtensionsEnabled", SpType = "Text", DvType = "Text"],
+        [Source = "ARCGuestConfigurationEnabled", Target = "ARCGuestConfigurationEnabled", SpType = "Text", DvType = "Text"],
+        [Source = "ARCLastRefreshed", Target = "ARCLastRefreshed", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "isSQLServer", Target = "isSQLServer", SpType = "Text", DvType = "Text"],
+        [Source = "ManageEngineStatus", Target = "ManageEngineStatus", SpType = "Text", DvType = "Text"],
+        [Source = "ManageEngineLastUpdate", Target = "ManageEngineLastUpdate", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "Missing_TP_Count", Target = "Missing_TP_Count", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "Missing_MS_Count", Target = "Missing_MS_Count", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "Installed_TP_Count", Target = "Installed_TP_Count", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "Installed_MS_Count", Target = "Installed_MS_Count", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "Important_Patch_Count", Target = "Important_Patch_Count", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "Low_Patch_Count", Target = "Low_Patch_Count", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "Moderate_Patch_Count", Target = "Moderate_Patch_Count", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "Critical_Patch_Count", Target = "Critical_Patch_Count", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "ManageEngineAgentVersion", Target = "ManageEngineAgentVersion", SpType = "Text", DvType = "Text"],
+        [Source = "Backup_x0020_Retention_x0020_in_x0020_Days", Target = "Backup_x0020_Retention_x0020_in_x0020_Days", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "Last_x0020_Backup_x0020_Date", Target = "Last_x0020_Backup_x0020_Date", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "Backup_x0020_Status", Target = "Backup_x0020_Status", SpType = "Text", DvType = "Text"],
+        [Source = "BackupRequired", Target = "BackupRequired", SpType = "Boolean", DvType = "TwoOptions"],
+        [Source = "ProvisioningState", Target = "ProvisioningState", SpType = "Choice", DvType = "Choice"],
+        [Source = "avEngineVersion", Target = "avEngineVersion", SpType = "Text", DvType = "Text"],
+        [Source = "avSignatureVersion", Target = "avSignatureVersion", SpType = "Text", DvType = "Text"],
+        [Source = "avPlatformVersion", Target = "avPlatformVersion", SpType = "Text", DvType = "Text"],
+        [Source = "avEngineUpdateTime", Target = "avEngineUpdateTime", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "avSignatureUpdateTime", Target = "avSignatureUpdateTime", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "avPlatformUpdateTime", Target = "avPlatformUpdateTime", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "avEngineUpToDate", Target = "avEngineUpToDate", SpType = "Text", DvType = "Text"],
+        [Source = "avSignatureUpToDate", Target = "avSignatureUpToDate", SpType = "Text", DvType = "Text"],
+        [Source = "avPlatformUpToDate", Target = "avPlatformUpToDate", SpType = "Text", DvType = "Text"],
+        [Source = "avLastSeenTime", Target = "avLastSeenTime", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "exposureLevel", Target = "exposureLevel", SpType = "Text", DvType = "Text"],
+        [Source = "InstanceID", Target = "InstanceID", SpType = "Integer", DvType = "WholeNumber"],
+        [Source = "order", Target = "order", SpType = "Number", DvType = "DecimalNumber"],
+        [Source = "GUID", Target = "GUID", SpType = "Guid", DvType = "UniqueIdentifier"],
+        [Source = "WorkflowInstanceID", Target = "WorkflowInstanceID", SpType = "Guid", DvType = "UniqueIdentifier"],
+        [Source = "Created", Target = "Created", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "Modified", Target = "Modified", SpType = "DateTime", DvType = "DateTime"],
+        [Source = "_UIVersionString", Target = "_UIVersionString", SpType = "Text", DvType = "Text"],
+        [Source = "Edit", Target = "Edit", SpType = "Computed", DvType = "Text"],
+        [Source = "LinkTitleNoMenu", Target = "LinkTitleNoMenu", SpType = "Computed", DvType = "Text"],
+        [Source = "DocIcon", Target = "DocIcon", SpType = "Computed", DvType = "Text"],
+        [Source = "ItemChildCount", Target = "ItemChildCount", SpType = "Lookup", DvType = "Text"],
+        [Source = "FolderChildCount", Target = "FolderChildCount", SpType = "Lookup", DvType = "Text"],
+        [Source = "_ComplianceFlags", Target = "_ComplianceFlags", SpType = "Lookup", DvType = "Text"],
+        [Source = "_ComplianceTag", Target = "_ComplianceTag", SpType = "Lookup", DvType = "Text"],
+        [Source = "_ComplianceTagWrittenTime", Target = "_ComplianceTagWrittenTime", SpType = "Lookup", DvType = "Text"],
+        [Source = "_ComplianceTagUserId", Target = "_ComplianceTagUserId", SpType = "Lookup", DvType = "Text"],
+        [Source = "_IsRecord", Target = "_IsRecord", SpType = "Computed", DvType = "Text"],
+        [Source = "AppAuthor", Target = "AppAuthor", SpType = "Lookup", DvType = "Text"],
+        [Source = "AppEditor", Target = "AppEditor", SpType = "Lookup", DvType = "Text"],
+        [Source = "Author", Target = "Author", SpType = "User", DvType = "Text"],
+        [Source = "Editor", Target = "Editor", SpType = "User", DvType = "Text"],
+        [Source = "Attachments", Target = "Attachments", SpType = "Attachments", DvType = "TwoOptions"]
+    },
+
+    ToText = (v as any) as nullable text =>
+        if v = null then
+            null
+        else if Value.Is(v, type record) then
+            if Record.HasFields(v, "Email") then Text.From(v[Email])
+            else if Record.HasFields(v, "DisplayName") then Text.From(v[DisplayName])
+            else if Record.HasFields(v, "Value") then Text.From(v[Value])
+            else Text.FromBinary(Json.FromValue(v), TextEncoding.Utf8)
+        else if Value.Is(v, type list) then
+            Text.Combine(List.Transform(v, each @ToText(_)), "; ")
+        else
+            Text.From(v),
+
+    ToChoiceText = (v as any) as nullable text =>
+        if v = null then null
+        else if Value.Is(v, type record) and Record.HasFields(v, "Value") then Text.From(v[Value])
+        else ToText(v),
+
+    ToUserTitleText = (v as any) as nullable text =>
+        if v = null then
+            null
+        else if Value.Is(v, type record) then
+            if Record.HasFields(v, "Title") then Text.From(v[Title])
+            else if Record.HasFields(v, "DisplayName") then Text.From(v[DisplayName])
+            else if Record.HasFields(v, "Email") then Text.From(v[Email])
+            else ToText(v)
+        else if Value.Is(v, type list) then
+            Text.Combine(
+                List.RemoveNulls(
+                    List.Transform(
+                        v,
+                        each
+                            let u = @ToUserTitleText(_)
+                            in if u = null or Text.Trim(u) = "" then null else u
+                    )
+                ),
+                "; "
+            )
+        else
+            ToText(v),
+
+    ToLogical = (v as any) as nullable logical =>
+        if v = null then
+            null
+        else if Value.Is(v, type logical) then
+            v
+        else
+            let
+                t = Text.Lower(Text.Trim(ToText(v)))
+            in
+                if List.Contains({"true", "yes", "y", "1"}, t) then true
+                else if List.Contains({"false", "no", "n", "0"}, t) then false
+                else null,
+
+    ToInt64 = (v as any) as nullable number =>
+        if v = null then null else try Int64.From(v) otherwise try Int64.FromText(ToText(v)) otherwise null,
+
+    ToNumber = (v as any) as nullable number =>
+        if v = null then null else try Number.From(v) otherwise try Number.FromText(ToText(v)) otherwise null,
+
+    ToDateTime = (v as any) as nullable datetime =>
+        if v = null then null else try DateTime.From(v) otherwise try DateTime.FromText(ToText(v)) otherwise null,
+
+    ToGuidText = (v as any) as nullable text =>
+        let
+            t = Text.Lower(Text.Trim(ToText(v))),
+            normalized = if t = null then null else Text.Replace(Text.Replace(t, "{", ""), "}", "")
+        in
+            if normalized = null or Text.Length(normalized) <> 36 then null else normalized,
+
+    NormalizeName = (name as nullable text) as text =>
+        if name = null then
+            ""
+        else
+            Text.Lower(
+                Text.Remove(
+                    Text.Replace(Text.Replace(name, "_x002d_", "-"), "_x0020_", " "),
+                    {" ", "-", "_", ".", "/", "(", ")"}
+                )
+            ),
+
+    ResolveSourceColumn = (sourceName as text, availableColumns as list) as nullable text =>
+        let
+            decoded = Text.Replace(Text.Replace(sourceName, "_x002d_", "-"), "_x0020_", " "),
+            withSpacedDash = Text.Replace(decoded, "-", " - "),
+            normalizedSource = NormalizeName(sourceName),
+            candidates = List.Distinct({sourceName, decoded, withSpacedDash}),
+            direct = List.First(List.Select(candidates, each List.Contains(availableColumns, _)), null),
+            byNormalized = if direct <> null then direct else List.First(List.Select(availableColumns, each NormalizeName(_) = normalizedSource), null),
+            serverFallback =
+                if byNormalized <> null then
+                    byNormalized
+                else if normalizedSource = "servername" and List.Contains(availableColumns, "LinkTitle") then
+                    "LinkTitle"
+                else if normalizedSource = "servername" and List.Contains(availableColumns, "Title") then
+                    "Title"
+                else
+                    null
+        in
+            serverFallback,
+
+    ConvertByType = (v as any, t as text) as any =>
+        if t = "Text" or t = "Note" or t = "Computed" then ToText(v)
+        else if t = "Choice" then ToChoiceText(v)
+        else if t = "User" or t = "UserMulti" then ToUserTitleText(v)
+        else if t = "Lookup" then ToText(v)
+        else if t = "LookupMulti" then ToText(v)
+        else if t = "Boolean" or t = "Attachments" then ToLogical(v)
+        else if t = "Integer" then ToInt64(v)
+        else if t = "Number" then ToNumber(v)
+        else if t = "DateTime" then ToDateTime(v)
+        else if t = "Guid" then ToGuidText(v)
+        else ToText(v),
+
+    AvailableColumns = Table.ColumnNames(Items),
+    ResolvedFieldMap = List.Transform(
+        FieldMap,
+        each Record.AddField(_, "ResolvedSource", ResolveSourceColumn(_[Source], AvailableColumns))
+    ),
+
+    Indexed = Table.AddIndexColumn(Items, "__rowid", 0, 1, Int64.Type),
+
+    WithOutputColumns = List.Accumulate(
+        ResolvedFieldMap,
+        Indexed,
+        (state as table, fm as record) =>
+            Table.AddColumn(
+                state,
+                "__out__" & fm[Target],
+                each
+                    let
+                        src = fm[ResolvedSource]
+                    in
+                        if src = null then null else ConvertByType(Record.FieldOrDefault(_, src, null), fm[SpType]),
+                if List.Contains({"Boolean", "Attachments"}, fm[SpType]) then type logical
+                else if fm[SpType] = "Integer" then Int64.Type
+                else if fm[SpType] = "Number" then type number
+                else if fm[SpType] = "DateTime" then type datetime
+                else type text
+            )
+    ),
+
+    OutputColumns = List.Transform(ResolvedFieldMap, each "__out__" & _[Target]),
+    SelectedOutputOnly = Table.SelectColumns(WithOutputColumns, OutputColumns, MissingField.UseNull),
+    Output = Table.TransformColumnNames(SelectedOutputOnly, each Text.AfterDelimiter(_, "__out__"))
+in
+    Output
